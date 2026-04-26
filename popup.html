@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>JKAnime Notifier</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="header">
+    <h1>JK Downloader</h1>
+    <button id="btn-force-check" class="btn-primary" title="Buscar nuevos capítulos ahora">↻ Revisar</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-recent">Últimos Episodios</button>
+    <button class="tab-btn" data-tab="tab-favorites">Mis Favoritos</button>
+  </div>
+
+  <div class="tab-content active" id="tab-recent">
+    <div id="recent-list" class="anime-list">
+      <div class="loading">Cargando...</div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-favorites">
+    <div id="favorites-list" class="anime-list">
+      <div class="empty-msg">No tienes animes favoritos guardados.</div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
