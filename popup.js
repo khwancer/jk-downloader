@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // Limpiar el badge al abrir el popup
-  chrome.runtime.sendMessage({ action: 'clearBadge' });
-  chrome.action.setBadgeText({ text: '' }); // Limpia también directamente por si acaso
+  chrome.action.setBadgeText({ text: '' });
+  chrome.storage.local.set({ badgeCount: 0 });
   
   // Elementos UI
   const btnForceCheck = document.getElementById('btn-force-check');
