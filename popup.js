@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const originalContent = downloadBtn.innerHTML;
         downloadBtn.innerHTML = '<svg class="spin-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
         downloadBtn.disabled = true;
-        chrome.runtime.sendMessage({ action: 'downloadEpisode', url: ep.url }, (response) => {
+        chrome.runtime.sendMessage({ action: 'downloadEpisode', url: ep.url, name: ep.name, epNumber: ep.epNumber }, (response) => {
           if (response && response.status === 'success') {
             downloadBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
             downloadBtn.classList.add('success-state');

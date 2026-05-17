@@ -28,12 +28,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.storage.local.set({ badgeCount: 0 });
   }
   if (request.action === 'downloadEpisode') {
-    handleDownload(request.url).then(res => sendResponse(res));
+    handleDownload(request.url, request.name, request.epNumber).then(res => sendResponse(res));
     return true; // Asíncrono
   }
 });
 
-async function handleDownload(url) {
+async function handleDownload(url, animeName, epNumber) {
   try {
     const res = await fetch(url);
     const text = await res.text();
@@ -70,6 +70,44 @@ async function handleDownload(url) {
       chrome.tabs.create({ url: targetLink });
       return { status: 'success' };
     } else {
+      // Intentar extraer enlace directo de mp4upload
+      try {
+        const mp4Res = await fetch(targetLink);
+        const mp4Text = await mp4Res.text();
+        
+        let directUrl = null;
+        
+        // El reproductor (videojs) asigna el src usando JS: player.src({ src: "https://...mp4" })
+        const scriptMatch = /src:\s*["'](https?:\/\/[^"']+\.mp4)["']/i.exec(mp4Text);
+        if (scriptMatch) {
+          directUrl = scriptMatch[1];
+        }
+
+        if (directUrl) {
+          if (animeName && epNumber) {
+            let safeName = animeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            let safeEp = epNumber.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            let customFileName = `${safeName}-${safeEp}.mp4`;
+            
+            directUrl = directUrl.replace(/[^/]+\.mp4$/i, customFileName);
+            
+            // Para que funcione con gestores como Free Download Manager (FDM), 
+            // el Referer tiene que ser la página de mp4upload. 
+            // Abrimos la página en una nueva pestaña (oculta o secundaria) pasando los datos
+            // por el hash, que será procesado por nuestro content script (content.js).
+            const autoUrl = targetLink + '#auto-download=1&url=' + encodeURIComponent(directUrl) + '&name=' + encodeURIComponent(customFileName);
+            chrome.tabs.create({ url: autoUrl, active: false });
+            return { status: 'success' };
+          }
+
+          chrome.tabs.create({ url: directUrl });
+          return { status: 'success' };
+        }
+      } catch (err) {
+        console.error("Error al extraer mp4upload:", err);
+      }
+      
+      // Si falla, abrimos la página de mp4upload normal
       chrome.tabs.create({ url: targetLink });
       return { status: 'success' };
     }
