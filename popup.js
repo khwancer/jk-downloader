@@ -5,8 +5,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Elementos UI
   const btnForceCheck = document.getElementById('btn-force-check');
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
+  const tabIndicator = document.getElementById('tab-indicator');
   const recentList = document.getElementById('recent-list');
   const favoritesList = document.getElementById('favorites-list');
 
@@ -16,9 +20,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Cargar datos del storage
   async function loadData() {
-    const storage = await chrome.storage.local.get(['episodeHistory', 'favorites']);
+    const storage = await chrome.storage.local.get(['episodeHistory', 'favorites', 'theme']);
     history = storage.episodeHistory || [];
     favorites = storage.favorites || {};
+    
+    // Aplicar tema
+    if (storage.theme === 'dark') {
+      document.body.classList.add('dark');
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    } else {
+      document.body.classList.remove('dark');
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    }
+
     renderLists();
   }
 
@@ -163,8 +179,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     return div;
   }
 
+  // Theme toggle
+  btnThemeToggle.addEventListener('click', async () => {
+    const isDark = document.body.classList.contains('dark');
+    if (isDark) {
+      document.body.classList.remove('dark');
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+      await chrome.storage.local.set({ theme: 'light' });
+    } else {
+      document.body.classList.add('dark');
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+      await chrome.storage.local.set({ theme: 'dark' });
+    }
+  });
+
   // Manejo de pestañas
-  tabBtns.forEach(btn => {
+  tabBtns.forEach((btn, index) => {
     btn.addEventListener('click', () => {
       tabBtns.forEach(b => b.classList.remove('active'));
       tabContents.forEach(c => c.classList.remove('active'));
@@ -172,6 +204,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.classList.add('active');
       const targetId = btn.getAttribute('data-tab');
       document.getElementById(targetId).classList.add('active');
+      
+      // Update indicator position
+      if (index === 0) {
+        tabIndicator.style.transform = 'translateX(0)';
+      } else {
+        tabIndicator.style.transform = 'translateX(100%)';
+      }
     });
   });
 
