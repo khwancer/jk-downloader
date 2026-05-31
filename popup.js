@@ -47,9 +47,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       recentList.innerHTML = '<div class="empty-msg">No hay episodios recientes. Haz clic en "Revisar".</div>';
     } else {
       // Limitar a los primeros 32 episodios
+      const fragment = document.createDocumentFragment();
       history.slice(0, 32).forEach(ep => {
-        recentList.appendChild(createAnimeElement(ep, false));
+        fragment.appendChild(createAnimeElement(ep, false));
       });
+      recentList.appendChild(fragment);
     }
 
     // Pestaña de favoritos: listamos directamente los animes marcados
@@ -60,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       // Mostrar cada anime favorito sin número de episodio
       let needsSave = false;
+      const fragment = document.createDocumentFragment();
       
       favNames.sort().forEach(favName => {
         let imageUrl = favorites[favName];
@@ -75,8 +78,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         }
         const el = createAnimeElement({ name: favName, epNumber: '', image: imageUrl }, true);
-        favoritesList.appendChild(el);
+        fragment.appendChild(el);
       });
+      
+      favoritesList.appendChild(fragment);
       
       if (needsSave) {
         chrome.storage.local.set({ favorites: favorites });
