@@ -97,13 +97,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isFav = favorites[ep.name] !== undefined;
 
     const imgHtml = ep.image ? `<img class="anime-img" src="${ep.image}" alt="cover">` : `<div class="anime-img-placeholder"></div>`;
+    
+    const safeNameAttr = ep.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const safeNameText = ep.name.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     div.innerHTML = `
       <div class="anime-img-container">
         ${imgHtml}
       </div>
       <div class="anime-info">
-        <div class="anime-name">${ep.name}</div>
+        <div class="anime-name">${safeNameText}</div>
         ${isOnlyName ? '' : `<div class="anime-ep">Episodio ${ep.epNumber}</div>`}
       </div>
       <div class="anime-actions">
@@ -115,7 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           </button>
         ` : ''}
-        <button class="fav-btn ${isFav ? 'is-fav' : ''}" data-name="${ep.name}" title="Agregar/Quitar de Favoritos">
+        <button class="fav-btn ${isFav ? 'is-fav' : ''}" data-name="${safeNameAttr}" title="Agregar/Quitar de Favoritos">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </button>
       </div>
