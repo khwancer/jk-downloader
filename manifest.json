@@ -1,16 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "JKAnime Auto-Notifier",
-  "version": "1.0.0",
-  "description": "Revisa automáticamente los nuevos episodios en JKAnime y te notifica de tus favoritos.",
+  "name": "JK Downloader",
+  "version": "2.1.0",
+  "description": "Revisa automáticamente nuevos episodios en JKAnime, notifica tus favoritos y descarga directo desde MediaFire, Mp4Upload y más.",
   "permissions": [
     "alarms",
     "storage",
     "notifications"
   ],
   "host_permissions": [
-    "https://jkanime.net/",
+    "*://jkanime.net/*",
+    "*://*.jkanime.net/*",
+    "*://mediafire.com/*",
     "*://*.mediafire.com/*",
+    "*://mp4upload.com/*",
     "*://*.mp4upload.com/*"
   ],
   "background": {
@@ -18,7 +21,10 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.mp4upload.com/*"],
+      "matches": [
+        "*://mp4upload.com/*",
+        "*://*.mp4upload.com/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_idle"
     }
